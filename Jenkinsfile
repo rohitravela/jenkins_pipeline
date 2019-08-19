@@ -20,7 +20,7 @@ node {
             
             stage 'Deploy'
             // Do nothing.
-	    sh 'go run .'
+	    sh 'go run hello.go'
 	    echo 'SUCCESSFUL RUN of GOLANG APPLICATION'
         }
     }
