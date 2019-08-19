@@ -6,7 +6,7 @@ node {
             
             stage 'Checkout'
         
-            git url: 'https://github.com/kns-1/golang-ci-jenkins-pipeline.git'
+            git url: 'https://github.com/kns-1/jenkins_pipeline.git'
         
             stage 'preTest'
             sh 'go version'
@@ -15,9 +15,9 @@ node {
             
             
             stage 'Build'
-		sh 'git clone https://github.com/grugrut/golang-ci-jenkins-pipeline.git'
-		sh 'cd golang-ci-jenkins-pipeline"
-            sh 'go build .'
+		sh 'git clone https://github.com/kns-1/jenkins_pipeline.git'
+		sh 'cd jenkins_pipeline'
+            sh 'go run hello.go'
             echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
             
             stage 'Deploy'
