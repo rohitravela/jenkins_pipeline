@@ -4,7 +4,7 @@ pipeline {
     tools { 
 	// Global tools to be used by the pipeline
         maven 'maven3.6' 
-        jdk 'jdk8' 
+        jdk 'jdk9' 
     }
     stages {
 	stage('Unit Tests') {
