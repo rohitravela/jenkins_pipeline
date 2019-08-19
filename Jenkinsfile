@@ -15,12 +15,13 @@ node {
             
             
             stage 'Build'
-            sh 'go build hello.go'
+            sh 'go build .'
             echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
             
             stage 'Deploy'
             // Do nothing.
-	    sh './hello.exe'
+	    sh 'go run .'
+	    echo 'SUCCESSFUL RUN of GOLANG APPLICATION'
         }
     }
 }
