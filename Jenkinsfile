@@ -1,61 +1,50 @@
 pipeline {
     agent any
-   
-    tools { 
-	// Global tools to be used by the pipeline
-        maven 'maven3.6' 
-        jdk 'jdk9' 
-    }
+ 
+    
     stages {
-	stage('Unit Tests') {
-	    // Run Unit tests 
-            steps{
-                sh 'mvn -f maths/pom.xml clean test'
-            }
-        }	
-        stage ('Artifactory configuration') {
-            steps {
-		// specify Artifactory server
-                rtServer (
-                    id: "ARTIFACTORY_SERVER",
-                    url: "http://artifactory:8081/artifactory",
-		    credentialsId: 'admin.jfrog'
-                )
-		// specify the repositories to be used for deploying the artifacts in the Artifactory
-                rtMavenDeployer (
-                    id: "MAVEN_DEPLOYER",
-                    serverId: "ARTIFACTORY_SERVER",
-                    releaseRepo: "libs-release-local",
-                    snapshotRepo: "libs-snapshot-local"
-                )
-		// defines the dependencies resolution details
-                rtMavenResolver (
-                    id: "MAVEN_RESOLVER",
-                    serverId: "ARTIFACTORY_SERVER",
-                    releaseRepo: "libs-release",
-                    snapshotRepo: "libs-snapshot"
-                )
-            }
-        }
-        stage ('Build & Upload Artifact') {
-	    // run Maven Build and upload the built artifact to Artifactory
-            steps {
-                rtMavenRun (
-                    tool: "maven3.6", // Tool name from Jenkins configuration
-                    pom: 'hello.xml',
-                    goals: 'clean install',
-                    deployerId: "MAVEN_DEPLOYER",
-                    resolverId: "MAVEN_RESOLVER"
-                )
-            }
-        }
-        stage ('Publish build info') {
-	    // Publish the build info in the Artifactory
-            steps {
-                rtPublishBuildInfo (
-                    serverId: "ARTIFACTORY_SERVER"
-                )
-            }
-        }
+	stage('Pre Test') {
+    echo 'Pulling Dependencies'
+
+    sh 'go version'
+    sh 'go get -u github.com/golang/dep/cmd/dep'
+    sh 'go get -u github.com/golang/lint/golint'
+    sh 'go get github.com/tebeka/go2xunit'
+    sh 'cd $GOPATH/src/cmd/project && dep ensure'
+}
+
+stage('Build'){
+    echo 'Building Executable'
+
+    //Produced binary is $GOPATH/src/cmd/project/project
+    sh """cd $GOPATH/src/cmd/project/ && go build -ldflags '-s'"""
+}
+
+stage('BitBucket Publish'){
+
+    //Find out commit hash
+    sh 'git rev-parse HEAD > commit'
+    def commit = readFile('commit').trim()
+
+    //Find out current branch
+    sh 'git name-rev --name-only HEAD > GIT_BRANCH'
+    def branch = readFile('GIT_BRANCH').trim()
+
+    //strip off repo-name/origin/ (optional)
+    branch = branch.substring(branch.lastIndexOf('/') + 1)
+
+    def archive = "${GOPATH}/project-${branch}-${commit}.tar.gz"
+
+    echo "Building Archive ${archive}"
+
+    sh """tar -cvzf ${archive} $GOPATH/src/cmd/project/project"""
+
+    echo "Uploading ${archive} to BitBucket Downloads"
+    withCredentials([string(credentialsId: 'bb-upload-key', variable: 'KEY')]) { 
+        sh """curl -s -u 'user:${KEY}' -X POST 'Downloads Page URL' --form files=@'${archive}' --fail"""
+    }
+}
+
+
     }
 }
