@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    # Global tools to be used by the pipeline
+ 
     tools { 
 	// Global tools to be used by the pipeline
        // maven 'maven3.6' 
