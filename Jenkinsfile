@@ -15,13 +15,14 @@ node {
             
             
             stage 'Build'
+		sh 'git clone https://github.com/grugrut/golang-ci-jenkins-pipeline.git'
+		sh 'cd golang-ci-jenkins-pipeline"
             sh 'go build .'
             echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
             
             stage 'Deploy'
             // Do nothing.
-	    sh 'go run hello.go'
-	    echo 'SUCCESSFUL RUN of GOLANG APPLICATION'
+	    
         }
     }
 }
