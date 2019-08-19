@@ -3,16 +3,11 @@ pipeline {
     # Global tools to be used by the pipeline
     tools { 
 	// Global tools to be used by the pipeline
-        maven 'maven3.6' 
-        jdk 'jdk8' 
+       // maven 'maven3.6' 
+        //jdk 'jdk8' 
     }
     stages {
-	stage('Unit Tests') {
-	    // Run Unit tests 
-            steps{
-                sh 'mvn -f maths/pom.xml clean test'
-            }
-        }	
+	
         stage ('Artifactory configuration') {
             steps {
 		// specify Artifactory server
@@ -21,7 +16,7 @@ pipeline {
                     url: "http://artifactory:8081/artifactory",
 		    credentialsId: 'admin.jfrog'
                 )
-		// specify the repositories to be used for deploying the artifacts in the Artifactory
+	// specify the repositories to be used for deploying the artifacts in the Artifactory
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
                     serverId: "ARTIFACTORY_SERVER",
@@ -42,7 +37,7 @@ pipeline {
             steps {
                 rtMavenRun (
                     tool: "maven3.6", // Tool name from Jenkins configuration
-                    pom: 'maths/pom.xml',
+                    pom: 'hello.go',
                     goals: 'clean install',
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
