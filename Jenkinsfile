@@ -1,50 +1,26 @@
-pipeline {
-    agent any
- 
-    
-    stages {
-	stage('Pre Test') {
-    echo 'Pulling Dependencies'
-
-    sh 'go version'
-    sh 'go get -u github.com/golang/dep/cmd/dep'
-    sh 'go get -u github.com/golang/lint/golint'
-    sh 'go get github.com/tebeka/go2xunit'
-    sh 'cd $GOPATH/src/cmd/project && dep ensure'
-}
-
-stage('Build'){
-    echo 'Building Executable'
-
-    //Produced binary is $GOPATH/src/cmd/project/project
-    sh """cd $GOPATH/src/cmd/project/ && go build -ldflags '-s'"""
-}
-
-stage('BitBucket Publish'){
-
-    //Find out commit hash
-    sh 'git rev-parse HEAD > commit'
-    def commit = readFile('commit').trim()
-
-    //Find out current branch
-    sh 'git name-rev --name-only HEAD > GIT_BRANCH'
-    def branch = readFile('GIT_BRANCH').trim()
-
-    //strip off repo-name/origin/ (optional)
-    branch = branch.substring(branch.lastIndexOf('/') + 1)
-
-    def archive = "${GOPATH}/project-${branch}-${commit}.tar.gz"
-
-    echo "Building Archive ${archive}"
-
-    sh """tar -cvzf ${archive} $GOPATH/src/cmd/project/project"""
-
-    echo "Uploading ${archive} to BitBucket Downloads"
-    withCredentials([string(credentialsId: 'bb-upload-key', variable: 'KEY')]) { 
-        sh """curl -s -u 'user:${KEY}' -X POST 'Downloads Page URL' --form files=@'${archive}' --fail"""
-    }
-}
-
-
+node {
+    def root = tool name: 'Go1.8', type: 'go'
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/grugrut/golang-ci-jenkins-pipeline") {
+        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+            env.PATH="${GOPATH}/bin:$PATH"
+            
+            stage 'Checkout'
+        
+            git url: 'https://github.com/kns-1/golang-ci-jenkins-pipeline.git'
+        
+            stage 'preTest'
+            sh 'go version'
+            sh 'go get -u github.com/golang/dep/...'
+            sh 'dep init'
+            
+            
+            stage 'Build'
+            sh 'go build hello.go'
+            echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
+            
+            stage 'Deploy'
+            // Do nothing.
+	    sh './hello.exe'
+        }
     }
 }
