@@ -19,7 +19,8 @@ node {
 		sh 'cd jenkins_pipeline'
 		sh 'go build ./hello.go'
 		sh 'ls'
-            sh 'go run hello.go'
+		sh './hello"
+           // sh 'go run hello.go'
             echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
             
             stage 'Deploy'
