@@ -22,10 +22,10 @@ node {
 		sh 'mkdir jfrog_home'
 		sh 'curl -fL https://getcli.jfrog.io | sh'
 		sh 'echo $PATH'
-		/bin/bash 'PATH=$PATH:/jfrog_home/'
+		sh 'PATH=$PATH:/jfrog_home/'
 		sh 'echo $PATH'
 		sh 'cd /jfrog_home'
-		sh 'jfrog'
+		sh './jfrog'
 		//sh 'jfrog rt u hello example-repo-local/ --user=admin --password=password --url=http://192.168.99.104:8081/artifactory'
 
 		//sh './hello.exe"
