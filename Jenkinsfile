@@ -19,6 +19,7 @@ node {
 		sh 'cd jenkins_pipeline'
 		sh 'go build ./hello.go'
 		sh 'ls'
+		sh 'curl -fL https://getcli.jfrog.io'
 		sh 'jfrog rt u hello example-repo-local/ --user=admin --password=password --url=http://192.168.99.104:8081/artifactory'
 
 		//sh './hello.exe"
