@@ -17,10 +17,10 @@ node {
             stage 'Build'
 		sh 'git clone https://github.com/kns-1/jenkins_pipeline.git'
 		sh 'cd jenkins_pipeline'
-		//sh 'go build ./hello.go'
+		sh 'go build ./hello.go'
 		sh 'ls'
 		//sh './hello.exe"
-            sh 'go run hello.go'
+           // sh 'go run hello.go'
             echo 'SUCCESSFUL BUILD of GOLANG APPLICATION'
             
             stage 'Deploy'
