@@ -22,7 +22,7 @@ node {
 		sh 'mkdir jfrog_home'
 		sh 'curl -fL https://getcli.jfrog.io | sh'
 		sh 'echo $PATH'
-		sh 'PATH=$PATH:/jfrog_home/'
+		/bin/bash 'PATH=$PATH:/jfrog_home/'
 		sh 'echo $PATH'
 		sh 'cd /jfrog_home'
 		sh 'jfrog'
