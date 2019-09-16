@@ -20,6 +20,7 @@ node {
 		sh 'go build ./hello.go'
 		sh 'ls'
 		sh 'curl -fL https://getcli.jfrog.io | sh'
+		sh 'sudo su -'
 		sh 'jfrog'
 		//sh 'jfrog rt u hello example-repo-local/ --user=admin --password=password --url=http://192.168.99.104:8081/artifactory'
 
